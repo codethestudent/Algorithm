@@ -4,7 +4,7 @@ class Solution {
     public int solution(int[] nums) {
         int answer = 0;
         
-        List<int[]> arrayList = getCombinations(nums, 3);
+        List<int[]> arrayList = getCombinations(nums);
         for(int[] a : arrayList){
             if(isPrime(sum(a))){
                 answer++; 
@@ -14,7 +14,7 @@ class Solution {
         return answer;
     }
     
-    public List<int[]> getCombinations(int[] nums, int k){
+    public List<int[]> getCombinations(int[] nums){
         int n = nums.length;
         List<int[]> arrayList = new ArrayList<>();
         
