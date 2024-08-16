@@ -1,8 +1,6 @@
 import java.util.*;
 
 class Solution {
-    // 속한 노래가 많이 재생된 장르 먼저
-    // 
     public int[] solution(String[] genres, int[] plays) {
         int[] answer = {};
         // 장르별로 정렬하기 위한 맵
