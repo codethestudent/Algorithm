@@ -16,11 +16,11 @@ public class Main {
 
         answer = 0;
         int n = 0;
-        for(int i = 2; i<10; i += 2){
-            answer += arr[i];
+        for(int i = 1; i*3<10; i++){
+            answer += arr[i*3 -1];
             n++;
         }
 
-        System.out.println((double) answer / n);
+        System.out.printf("%.1f",(double) answer / n);
     }
 }
