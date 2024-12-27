@@ -26,7 +26,7 @@ public class Main {
     private static int recur(int n) {
         if (dp[n] == 0) {
             dp[n] = cardPack[n];
-            for (int i = 1; i <= n; i++) {
+            for (int i = 1; i <= n/2; i++) {
                 dp[n] = Math.max(recur(n - i) + recur(i), dp[n]);
             }
         }
