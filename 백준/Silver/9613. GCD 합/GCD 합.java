@@ -1,38 +1,36 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+            int N = Integer.parseInt(br.readLine());
 
-        int t = Integer.parseInt(br.readLine());
-
-        while(t-- > 0) {
-            String[] inputs = br.readLine().split(" ");
-
-            int n = Integer.parseInt(inputs[0]);
-
-            int[] arr = new int[n];
-            long answer = 0;
-
-            for(int i = 0; i < arr.length; i++) {
-                arr[i] = Integer.parseInt(inputs[i + 1]);
+            List<Long> answers = new ArrayList<>();
+            for (int i = 0; i < N; i++) {
+                int[] inputs = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+                answers.add(getGcdSum(inputs));
             }
-
-            for(int i = 0; i < arr.length-1; i++) {
-                for (int j = i + 1; j < arr.length; j++) {
-                    answer += gcd(arr[i], arr[j]);
-                }
-            }
-            bw.write(answer + "\n");
-
+            answers.stream().forEach(System.out::println);
         }
-        bw.flush();
-        bw.close();
+    }
+
+    private static long getGcdSum(int[] arr) {
+        long result = 0;
+        for (int i = 1; i < arr[0]; i++) {
+            for (int j = i + 1; j <= arr[0]; j++) {
+                result += gcd(arr[i], arr[j]);
+            }
+        }
+        return result;
     }
 
     private static int gcd(int a, int b) {
-        while(b > 0) {
+        while (b > 0) {
             int temp = b;
             b = a % b;
             a = temp;
