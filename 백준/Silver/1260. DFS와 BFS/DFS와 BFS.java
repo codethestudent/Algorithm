@@ -1,60 +1,77 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class Main {
+    static List<Integer>[] graph;
+    static boolean[] visited;
 
-    public static void main(String[] args) {
-        try (Scanner sc = new Scanner(System.in);) {
-            int nodes = sc.nextInt();
-            int connections = sc.nextInt();
-            int startingNode = sc.nextInt();
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+            int[] input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
-            Map<Integer, List<Integer>> graph = new HashMap<>();
-            for (int i = 1; i <= nodes; i++) {
-                graph.put(i, new ArrayList<>());
+            int N = input[0];
+            int M = input[1];
+            int V = input[2];
+
+            visited = new boolean[N + 1];
+            graph = new ArrayList[N + 1];
+            for (int i = 1; i < N + 1; i++) {
+                graph[i] = new ArrayList<>();
+            }
+            for (int i = 0; i < M; i++) {
+                int[] connection = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+                graph[connection[0]].add(connection[1]);
+                graph[connection[1]].add(connection[0]);
             }
 
-            for (int i = 0; i < connections; i++) {
-                int node1 = sc.nextInt();
-                int node2 = sc.nextInt();
-                graph.get(node1).add(node2);
-                graph.get(node2).add(node1);
-                Collections.sort(graph.get(node1));
-                Collections.sort(graph.get(node2));
+            for (int i = 1; i < N + 1; i++) {
+                Collections.sort(graph[i]);
             }
 
-            boolean[] visited = new boolean[nodes];
-            dfs(graph, visited, startingNode);
-            visited = new boolean[nodes];
+            dfs(V);
             System.out.println();
-            bfs(graph, visited, startingNode);
+            Arrays.fill(visited, false);
+            bfs(V);
+
         }
+
     }
 
-    public static void dfs(Map<Integer, List<Integer>> graph, boolean[] visited, int startingNode) {
-        while (!visited[startingNode - 1]) {
-            System.out.print(startingNode + " ");
-            visited[startingNode - 1] = true;
-
-            for (int i = 0; i < graph.get(startingNode).size(); i++) {
-                dfs(graph, visited, graph.get(startingNode).get(i));
+    private static void dfs(int start) {
+        if (visited[start]) {
+            return;
+        } else {
+            System.out.print(start + " ");
+            int i = 0;
+            visited[start] = true;
+            while (i < graph[start].size()) {
+                dfs(graph[start].get(i++));
             }
         }
     }
 
-    public static void bfs(Map<Integer, List<Integer>> graph, boolean[] visited, int startingNode) {
+    private static void bfs(int start) {
         Queue<Integer> queue = new LinkedList<>();
-        queue.add(startingNode);
-
+        queue.add(start);
         while (!queue.isEmpty()) {
-            int node = queue.poll();
-            visited[node - 1] = true;
-            System.out.print(node + " ");
-            for (int i = 0; i < graph.get(node).size(); i++) {
-                if (!visited[graph.get(node).get(i) - 1]) {
-                    visited[graph.get(node).get(i) - 1] = true;
-                    queue.add(graph.get(node).get(i));
+            int current = queue.poll();
+            if (!visited[current]) {
+                System.out.print(current + " ");
+                visited[current] = true;
+            }
+            for (int i = 0; i < graph[current].size(); i++) {
+                if(!visited[graph[current].get(i)]){
+                    queue.add(graph[current].get(i));
                 }
             }
         }
     }
+
 }
