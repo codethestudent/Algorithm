@@ -1,72 +1,64 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-//1167. 트리의 지름 
 public class Main {
-	static class Node{
-		int to;
-		int cost; 
-		public Node(int to, int cost) {
-			this.to=to;
-			this.cost=cost;
-		}
-	}
+    static class Edge {
+        int to, weight;
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
 
-	static int V;
-	static ArrayList<Node> edges[];
-	static boolean visit[];
-	static int candidate;
-	static int answer;
-	static int max;
+    static List<Edge>[] tree;
+    static boolean[] visited;
+    static int farthestNode;
+    static int maxDistance;
 
-	public static void main(String[] args) throws Exception {
-	
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		V=Integer.parseInt(br.readLine());
-		edges = new ArrayList[V+1];
-		visit = new boolean[V+1];
-		
-		for(int i=0; i<=V; i++) {
-			edges[i]= new ArrayList<Node>();
-		}
-		for(int i=0; i<V; i++) {
-			st = new StringTokenizer(br.readLine());
-			int vertex = Integer.parseInt(st.nextToken());
-			while(true) {
-				int next = Integer.parseInt(st.nextToken());
-				if(next==-1)
-					 break;
-				int cost = Integer.parseInt(st.nextToken());
-				edges[vertex].add(new Node(next,cost));
-			}
-		}
-		
+    // DFS to find the farthest node and its distance from the start
+    static void dfs(int u, int dist) {
+        visited[u] = true;
+        if (dist > maxDistance) {
+            maxDistance = dist;
+            farthestNode = u;
+        }
+        for (Edge e : tree[u]) {
+            if (!visited[e.to]) {
+                dfs(e.to, dist + e.weight);
+            }
+        }
+    }
 
-		dfs(1,0); // 임의의 한 지점에서 dfs를 돌려서 이 정점으로 부터 가장 먼 정점 구하기 
-		
-		visit=new boolean[V+1];
-		dfs(candidate, 0);
-		
-		System.out.println(max);
-	}
-	
-	static public void dfs(int v, int len) {
-		if(len>max) {
-			max=len;
-			candidate=v;
-		}
-		visit[v]=true;
-		for(int i=0; i<edges[v].size(); i++) {
-			Node next = edges[v].get(i);
-			if(visit[next.to]==false) {
-				dfs(next.to,len+next.cost);
-			}
-		}
-	}
-	
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int V = Integer.parseInt(br.readLine());
+        tree = new ArrayList[V + 1];
+        for (int i = 1; i <= V; i++) {
+            tree[i] = new ArrayList<>();
+        }
+
+        // Read the tree
+        for (int i = 0; i < V; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            while (true) {
+                int v = Integer.parseInt(st.nextToken());
+                if (v == -1) break;
+                int w = Integer.parseInt(st.nextToken());
+                tree[u].add(new Edge(v, w));
+            }
+        }
+
+        // 1) From node 1, find the farthest node A
+        visited = new boolean[V + 1];
+        maxDistance = 0;
+        dfs(1, 0);
+
+        // 2) From node A, find the farthest node B — that's the diameter
+        visited = new boolean[V + 1];
+        maxDistance = 0;
+        dfs(farthestNode, 0);
+
+        System.out.println(maxDistance);
+    }
 }
