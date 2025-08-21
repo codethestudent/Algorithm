@@ -37,8 +37,8 @@ public class Main {
                 }
             }
 
-            System.out.println(hi);
-
+            bw.write(String.valueOf(hi));
+            bw.flush();
         }
     }
 }
