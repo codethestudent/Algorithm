@@ -1,45 +1,64 @@
 import java.io.*;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    private static double Rx;
+    private static double Wx;
+    private static double Ry;
+    private static double Wy;
 
-        double Ax = Double.parseDouble(st.nextToken());
-        double Ay = Double.parseDouble(st.nextToken());
-        double Bx = Double.parseDouble(st.nextToken());
-        double By = Double.parseDouble(st.nextToken());
-        double Cx = Double.parseDouble(st.nextToken());
-        double Cy = Double.parseDouble(st.nextToken());
-        double Dx = Double.parseDouble(st.nextToken());
-        double Dy = Double.parseDouble(st.nextToken());
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out))) {
 
-        // R = A - C
-        double Rx = Ax - Cx, Ry = Ay - Cy;
-        // U = B - A, V = D - C, W = U - V
-        double Ux = Bx - Ax, Uy = By - Ay;
-        double Vx = Dx - Cx, Vy = Dy - Cy;
-        double Wx = Ux - Vx, Wy = Uy - Vy;
+            StringTokenizer st = new StringTokenizer(br.readLine());
 
-        double RR = Rx*Rx + Ry*Ry;          // R·R
-        double RW = Rx*Wx + Ry*Wy;          // R·W
-        double WW = Wx*Wx + Wy*Wy;          // W·W
+            double Ax = Double.parseDouble(st.nextToken());
+            double Ay = Double.parseDouble(st.nextToken());
+            double Bx = Double.parseDouble(st.nextToken());
+            double By = Double.parseDouble(st.nextToken());
+            double Cx = Double.parseDouble(st.nextToken());
+            double Cy = Double.parseDouble(st.nextToken());
+            double Dx = Double.parseDouble(st.nextToken());
+            double Dy = Double.parseDouble(st.nextToken());
 
-        double t;
-        if (WW == 0.0) {                    // 상대 속도 0 → 거리 일정
-            t = 0.0;
-        } else {
-            t = - RW / WW;                  // 이차함수 최소점
-            if (t < 0.0) t = 0.0;           // clamp to [0,1]
-            else if (t > 1.0) t = 1.0;
+            // R = 민호 기준으로 강호의 초기 위치
+            Rx = Ax - Cx;
+            Ry = Ay - Cy;
+
+            double Ux = Bx - Ax;
+            double Uy = By - Ay;
+            double Vx = Dx - Cx;
+            double Vy = Dy - Cy;
+
+            // W = 민호와 강호의 거리 차이
+            Wx = Ux - Vx;
+            Wy = Uy - Vy;
+
+            double lo = 0.0;
+            double hi = 1.0;
+
+            for (int i = 0; i < 100; i++) {
+                double m1 = (2 * lo + hi) / 3.0;
+                double m2 = (lo + 2 * hi) / 3.0;
+
+                if (getDistance(m1) < getDistance(m2)) {
+                    hi = m2;
+                } else {
+                    lo = m1;
+                }
+            }
+
+            bw.write(String.format("%.10f%n", Math.sqrt(getDistance((hi + lo) / 2.0))));
+            bw.flush();
         }
+    }
 
-        double dx = Rx + t * Wx;
-        double dy = Ry + t * Wy;
-        double dist = Math.hypot(dx, dy);   // sqrt(dx*dx + dy*dy)
+    // getDistance = (초기 민호 강호의 거리 차이) + time(각 도착 지점과 시작 지점의 거리 차이)
+    private static double getDistance(double time) {
+        double lx = Rx + time * (Wx);
+        double ly = Ry + time * (Wy);
 
-        System.out.printf(Locale.ROOT, "%.10f%n", dist);
+        return Math.pow(lx, 2) + Math.pow(ly, 2);
     }
 }
